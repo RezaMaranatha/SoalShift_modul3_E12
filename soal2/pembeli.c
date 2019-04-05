@@ -83,7 +83,7 @@ int main(int argc, char const *argv[]) {
                 *value=countr;
         }
         else{
-                printf("Enter tambah atau exit\n");
+                printf("Enter beli atau exit\n");
 		//send(new_socket,no,strlen(no),0);
         }
         //printf("%s\n",buffer);
