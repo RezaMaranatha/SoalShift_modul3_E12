@@ -1,9 +1,24 @@
+#define cls system("clear")
+#include <termios.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
 #include <time.h>
 #include <unistd.h>
+
+int getch()
+{
+	struct termios oldt, newt;
+	int ch;
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt= oldt;
+	newt.c_lflag &= ~(ICANON| ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	ch= getchar();
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+	return ch;
+}
 
 int hunger=200, food=10, hygiene=100, health=300, flag=0;
 time_t time1;
@@ -21,7 +36,6 @@ void* autoo(void *a)
 
 		if(second > 0 && second % 10 == 0)
 		{ 
-			//printf("1\n");
 			hunger = hunger - 5;
 			health = health + 5;
 			sleep(1);
@@ -29,7 +43,6 @@ void* autoo(void *a)
 
 		if(second > 0 && second % 30 == 0)
 		{ 
-			//printf("2\n");
 			hygiene = hygiene - 10;
 			sleep(1);
 		}
@@ -41,7 +54,7 @@ void* standby(void *a)
 {
 	while(1){
 		while(flag != 0){}
-		system("clear");		
+		cls;		
 		printf("Standby Mode\n");
 		printf("Health    : %d\n", health);
 		printf("Hunger    : %d\n", hunger);
@@ -53,7 +66,9 @@ void* standby(void *a)
 		if(timer == 0) printf("Bath is ready\n");
 		printf("Choice\n1. Eat\n2. Bath\n3. Battle\n4. Shop\n5. Exit\n\n");
 
-		scanf("%d", &flag);
+		int c = getch();
+		//scanf("%d", &flag);
+		flag = c -'0';
 		if(timer > 0 && flag == 2) flag = 0;
 		if (flag == 5) exit(0);
 	}
@@ -62,13 +77,12 @@ void* eat(void *a)
 {
 	while(1){
 		while(flag != 1){}
-		system("clear");
+		cls;
 		if(food > 0)
 		{
 			hunger = hunger + 15;
 			food--;
 		}
-		if(food <= 0) printf("Makanan habis\n\n");
 		flag = 0;
 	}
 }
@@ -77,7 +91,7 @@ void* bath(void *a)
 {
 	while(1){
 		while(flag != 2){}
-		system("clear");
+		cls;
 		hygiene = hygiene + 30;
 		flag = 0;
 		cooldown = clock();
@@ -89,18 +103,20 @@ void* battle(void *a)
 {
 	while(1){
 		while(flag != 3){}
-		system("clear");
+		cls;
 		int health_NPC = 100;
 		int input = 0;
 		while(input != 2)
 		{
-			system("clear");
+			cls;
 			printf("Battle Mode\n");
 			printf("Monster's Health : %d\n", health);
 			printf("Enemy's Health   : %d\n", health_NPC);
 			printf("Choices \n1. Attack\n2. Run\n\n");
 
-			scanf("%d", &input);
+			int c = getch();
+			//scanf("%d", &input);
+			input = c - '0';
 			if(input == 1)
 			{
 				health = health - 20;
