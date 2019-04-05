@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#define PORT 8080
+#define PORT 8888
 
 int *value;
 int countr = 0;
