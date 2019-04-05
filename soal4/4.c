@@ -15,7 +15,7 @@ void* simpan1(void *arg){
 	
 //	}
 	chdir("/home/reza/Documents/FolderProses1");
-        system("ps aux | head -n 10 > SimpanProses1.txt");
+        system("ps aux | head -n 11 | tail -n 10 > SimpanProses1.txt");
 	s3=1;
 	//return NULL;
 }
@@ -26,7 +26,7 @@ void* simpan2(void *arg){
 
 //	}
 	chdir("/home/reza/Documents/FolderProses2");
-        system("ps aux | head -n 10 > SimpanProses2.txt");
+        system("ps aux | head -n 11 | tail -n 10 > SimpanProses2.txt");
         s4=1;
 }
 
@@ -37,9 +37,7 @@ void* kompres1(void *arg){
 	}
 	chdir("/home/reza/Documents/FolderProses1");
 	system("zip KompresProses1.zip SimpanProses1.txt && rm SimpanProses1.txt");
-        printf("\nMenunggu 15 detik untuk mengekstrak kembali\n");
 	s5=1;
-	sleep(15);
 }
 
 void* kompres2(void *arg){
@@ -49,12 +47,12 @@ void* kompres2(void *arg){
         }
 	chdir("/home/reza/Documents/FolderProses2");
         system("zip KompresProses2.zip SimpanProses2.txt && rm SimpanProses2.txt");
-	printf("\nMenunggu 15 detik untuk mengekstrak kembali\n");
 	s6=1;
-	sleep(15);
 }
 
 void* decom1(void *arg){
+	printf("\nMenunggu 15 detik untuk mengekstrak kembali\n");
+	sleep(15);
         while(s5!=1){
 
         }
@@ -63,6 +61,8 @@ void* decom1(void *arg){
 }
 
 void* decom2(void *arg){
+	printf("\nMenunggu 15 detik untuk mengekstrak kembali\n");
+        sleep(15);
         while(s6!=1){
 
         }
