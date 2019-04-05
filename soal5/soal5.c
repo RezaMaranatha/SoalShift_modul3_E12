@@ -6,6 +6,9 @@
 #include <math.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <string.h>
 
 int getch()
 {
@@ -21,6 +24,9 @@ int getch()
 }
 
 int hunger=200, food=10, hygiene=100, health=300, flag=0;
+int *stok;
+char name[300]="\0";
+int stokctr=0;
 time_t time1;
 struct tm begin;
 clock_t cooldown;
@@ -56,6 +62,7 @@ void* standby(void *a)
 		while(flag != 0){}
 		cls;		
 		printf("Standby Mode\n");
+		printf("Monster Name : %s", name);
 		printf("Health    : %d\n", health);
 		printf("Hunger    : %d\n", hunger);
 		printf("Hygiene   : %d\n",hygiene);
@@ -142,26 +149,73 @@ void* battle(void *a)
 	}
 }
 
-/*void* shop(void *a)
+void* shop(void *a)
 {
-	while(flag != 4){}
-	printf("Shop Mode\n");
-	printf("Shop food stock: \n", food); 	
-}*/
+	key_t key = 1234;
+        int shmid = shmget(key, sizeof(int), IPC_CREAT | 0666);
+        stok = shmat(shmid, NULL, 0);
+	while(1){
+		while(flag != 4){}
+		cls;
+		int input = 0;
+		while(input!=2){
+			cls;
+			printf("Shop Mode\n");
+			printf("Shop Food Stock: %d\n", *stok);
+			printf("Your food stock: %d\n", food);
+			printf("Choices \n1. Buy\n2. Back\n\n");
+
+			int c = getch();
+                        //scanf("%d", &input);
+                        input = c - '0';
+
+			if(input==1){
+				stokctr=*stok;
+				if(stokctr==0){
+					printf("Food Stock Empty.\n");
+					sleep(1);
+					continue;
+				}
+				else{
+					stokctr--;
+					*stok = stokctr;
+					food++;
+					printf("Food Bought!\n");
+					sleep(1);
+				}
+			}
+			else if(input==2){
+				flag = 0;
+			}
+		}
+	}
+	shmdt(stok);
+}
 
 int main(){
+	puts("Enter Monster Name : ");
+	int i=0;
+
+	while ((name[i] = getch()) != EOF && name[i] != '\n'){
+		printf ("%c", name[i]);
+		i++;	
+	}
+
 	time1 = time(NULL);
 	begin = *localtime(&time1);
 
+
 	cooldown = clock()-20*CLOCKS_PER_SEC;
-	
-	pthread_t tid0,tid1,tid2,tid3,tid4;
+
+	pthread_t tid0,tid1,tid2,tid3,tid4,tid5;
 
 	pthread_create(&tid0, NULL, autoo, NULL);
 	pthread_create(&tid1, NULL, standby, NULL);
 	pthread_create(&tid2, NULL, eat, NULL);
 	pthread_create(&tid3, NULL, bath, NULL);
 	pthread_create(&tid4, NULL, battle, NULL);
+	pthread_create(&tid5, NULL, shop, NULL);
+
 
 	while(1){
 		if(hunger <= 0)

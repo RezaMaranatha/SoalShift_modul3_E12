@@ -91,7 +91,7 @@ int main(int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    if (listen(server_fd, 3) < 0) {
+    if (listen(server_fd, 0) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
